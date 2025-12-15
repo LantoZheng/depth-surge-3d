@@ -194,13 +194,19 @@ def get_system_info():
     """Get system information including GPU details"""
     import torch  # Import here to avoid early CUDA initialization
 
-    info = {"gpu_device": "CPU", "vram_usage": "N/A", "device_mode": "CPU", "cuda_available": False}
+    info = {
+        "gpu_device": "CPU",
+        "vram_usage": "N/A",
+        "device_mode": "CPU",
+        "cuda_available": False,
+        "mps_available": False,
+    }
 
     try:
         if torch.cuda.is_available():
             info["cuda_available"] = True
             info["gpu_device"] = torch.cuda.get_device_name(0)
-            info["device_mode"] = "GPU"
+            info["device_mode"] = "GPU (CUDA)"
 
             # Get VRAM usage
             try:
@@ -210,6 +216,11 @@ def get_system_info():
             except Exception as vram_error:
                 vprint(f"Error getting VRAM details: {vram_error}")
                 info["vram_usage"] = "N/A"
+        elif hasattr(torch.backends, "mps") and torch.backends.mps.is_available():
+            info["mps_available"] = True
+            info["gpu_device"] = "Apple Silicon (MPS)"
+            info["device_mode"] = "GPU (MPS)"
+            info["vram_usage"] = "Unified Memory"
     except Exception as e:
         vprint(f"Error getting GPU info: {e}")
 
@@ -369,12 +380,16 @@ def process_video_async(session_id, video_path, settings, output_dir):
         current_processing["session_id"] = session_id
         current_processing["stop_requested"] = False
 
-        # Check CUDA availability in this thread
+        # Check GPU availability in this thread
         cuda_available = torch.cuda.is_available()
+        mps_available = hasattr(torch.backends, "mps") and torch.backends.mps.is_available()
+
         if cuda_available:
             print(f"CUDA detected: {torch.cuda.get_device_name(0)}")
+        elif mps_available:
+            print("Apple Silicon MPS detected")
         else:
-            print("CUDA not available, using CPU")
+            print("No GPU acceleration available, using CPU")
 
         # Initialize projector with Video-Depth-Anything model
         # Use model_size setting to select the appropriate model
@@ -393,12 +408,26 @@ def process_video_async(session_id, video_path, settings, output_dir):
 
         device = settings.get("device", "auto")
         if device == "auto":
-            device = "cuda" if cuda_available else "cpu"
+            if cuda_available:
+                device = "cuda"
+            elif mps_available:
+                device = "mps"
+            else:
+                device = "cpu"
 
         # Fail fast if GPU requested but not available
         if device == "cuda" and not cuda_available:
             error_msg = (
                 "GPU (CUDA) requested but not available. "
+                "This system does not have an NVIDIA GPU or CUDA is not installed. "
+                "Please select 'Auto' or 'Force CPU' in Processing Device settings."
+            )
+            raise Exception(error_msg)
+
+        if device == "mps" and not mps_available:
+            error_msg = (
+                "Apple Silicon GPU (MPS) requested but not available. "
+                "MPS requires an Apple Silicon Mac (M1/M2/M3) running macOS 12.3 or later. "
                 "Please select 'Auto' or 'Force CPU' in Processing Device settings."
             )
             raise Exception(error_msg)

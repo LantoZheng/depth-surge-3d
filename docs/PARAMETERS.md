@@ -8,7 +8,11 @@
 - **`-o, --output`**: Output directory (default: ./output)
 - **`-m, --model`**: Path to Video-Depth-Anything model file (auto-downloads if missing)
 - **`-f, --format`**: VR format - 'side_by_side' or 'over_under' (default: side_by_side)
-- **`--device`**: Processing device - 'cpu', 'cuda', or 'auto' (default: auto)
+- **`--device`**: Processing device (default: auto)
+  - **auto**: Automatically detect best available (CUDA → MPS → CPU)
+  - **cuda**: Force NVIDIA GPU (Linux/Windows with CUDA)
+  - **mps**: Force Apple Silicon GPU (macOS with M1/M2/M3)
+  - **cpu**: Force CPU processing (slowest, works everywhere)
 
 ### Time Range Options
 
