@@ -4,10 +4,18 @@
 
 - Python 3.9+
 - FFmpeg
-- CUDA 13.0+ (required for GPU acceleration)
-- CUDA-compatible GPU (optional, but strongly recommended for faster processing)
 - Git
 - curl or wget (for downloading models)
+
+### GPU Acceleration (Recommended)
+
+GPU acceleration significantly speeds up processing:
+
+- **NVIDIA GPU (Linux/Windows)**: CUDA 11.0+ with compatible drivers
+- **Apple Silicon Mac (M1/M2/M3)**: MPS (Metal Performance Shaders) - automatically detected, no additional setup required
+- **Intel Mac**: CPU-only processing (no GPU acceleration)
+
+> **Note**: GPU acceleration is optional but strongly recommended. CPU processing works but is 10-20x slower.
 
 ## Quick Setup (Recommended)
 
@@ -146,11 +154,41 @@ python depth_surge_3d.py --list-resolutions
 - On Windows, use PowerShell or download files manually from the URLs
 - Ensure all dependencies are in your PATH before running
 
+## macOS-Specific Notes
+
+### Apple Silicon (M1/M2/M3)
+
+Apple Silicon Macs use Metal Performance Shaders (MPS) for GPU acceleration. This is automatically detected when you use `--device auto` (the default).
+
+```bash
+# Verify MPS is available
+python -c "import torch; print('MPS available:', torch.backends.mps.is_available())"
+
+# Force MPS device explicitly
+python depth_surge_3d.py video.mp4 --device mps
+```
+
+**Performance Tips for Apple Silicon:**
+- MPS acceleration provides significant speedup over CPU (typically 3-5x faster)
+- The Base model (`vitb`) is recommended for Macs with 16GB unified memory
+- Use `--vr-resolution 16x9-1080p` for faster processing on lower-end Macs
+- Close other memory-intensive applications during processing
+
+### Intel Mac
+
+Intel Macs do not have MPS support. Processing will use CPU only:
+
+```bash
+python depth_surge_3d.py video.mp4 --device cpu
+```
+
+**Note**: CPU processing is significantly slower. Consider using shorter video clips or lower resolutions.
+
 ## Testing Your Installation
 
 Run `./test.sh` to verify your installation:
 - ✓ Python dependencies
-- ✓ CUDA availability
+- ✓ GPU availability (CUDA or MPS)
 - ✓ Model files
 - ✓ Input video
 - ✓ FFmpeg

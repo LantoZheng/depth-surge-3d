@@ -129,7 +129,10 @@ Note: Always uses Video-Depth-Anything for temporal consistency across frames.
     # Model and device
     parser.add_argument("--model", help="Path to Video-Depth-Anything model file (auto-downloads if missing)")
     parser.add_argument(
-        "--device", choices=["auto", "cuda", "cpu"], default="auto", help="Processing device (default: auto)"
+        "--device",
+        choices=["auto", "cuda", "mps", "cpu"],
+        default="auto",
+        help="Processing device: auto (detect best), cuda (NVIDIA GPU), mps (Apple Silicon), cpu (default: auto)",
     )
     parser.add_argument(
         "--metric", action="store_true", help="Use metric depth model (outputs real depth values in meters)"

@@ -20,11 +20,18 @@ This warning is normal and doesn't affect functionality. The system will use PyT
 - **Don't save intermediates**: Add `--no-intermediates` to reduce disk I/O
 - **Process shorter clips**: Use `-s` and `-e` to process smaller time ranges
 
-### CUDA initialization errors
+### CUDA initialization errors (Linux/Windows)
 - **Enable persistence mode**: Run `sudo nvidia-smi -pm 1` to enable GPU persistence mode
-- **Check CUDA version**: Ensure CUDA 13.0+ is installed
+- **Check CUDA version**: Ensure CUDA 11.0+ is installed
 - **Check driver version**: Update NVIDIA drivers to latest version
 - **Reboot after driver updates**: Some CUDA changes require a system restart
+
+### MPS errors (macOS Apple Silicon)
+- **Verify MPS availability**: Run `python -c "import torch; print(torch.backends.mps.is_available())"`
+- **Update macOS**: Ensure you're running macOS 12.3 or later for MPS support
+- **Update PyTorch**: Run `pip install --upgrade torch torchvision`
+- **Try CPU fallback**: Use `--device cpu` if MPS causes issues
+- **Memory pressure**: Close other apps to free unified memory
 
 ### Audio extraction failed
 This typically occurs when:
@@ -92,10 +99,19 @@ Can be significant for long/high-resolution videos:
 ## Performance Tips
 
 ### GPU Acceleration
+
+**NVIDIA GPU (Linux/Windows):**
 - **Check CUDA availability**: `nvidia-smi` should show your GPU
 - **Enable persistence mode**: `sudo nvidia-smi -pm 1`
 - **Monitor GPU usage**: Use `nvidia-smi` during processing to verify GPU utilization
 - **Close other GPU applications**: Free up VRAM by closing games, browsers with hardware acceleration, etc.
+
+**Apple Silicon Mac (M1/M2/M3):**
+- **Check MPS availability**: `python -c "import torch; print(torch.backends.mps.is_available())"`
+- **Monitor memory usage**: Use Activity Monitor to check memory pressure
+- **Close memory-intensive apps**: MPS uses unified memory shared with the system
+- **Use Base model**: For Macs with 16GB RAM, use `--model-size vitb` for better memory efficiency
+- **Reduce resolution**: Use `--vr-resolution 16x9-1080p` if processing is slow
 
 ### Disk I/O
 - **Use SSD**: Much faster for reading/writing intermediate frames
@@ -105,7 +121,7 @@ Can be significant for long/high-resolution videos:
 ### Memory Management
 - **Chunked processing**: The system automatically processes frames in small batches to avoid memory issues
 - **Close other applications**: Free up system RAM for better performance
-- **Monitor memory usage**: Use `htop` or Task Manager to check RAM/VRAM usage
+- **Monitor memory usage**: Use `htop` (Linux), Task Manager (Windows), or Activity Monitor (macOS)
 
 ## Getting Help
 

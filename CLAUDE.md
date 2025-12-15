@@ -20,8 +20,9 @@ A comprehensive 2D to 3D VR video converter using Video-Depth-Anything for tempo
 - **AI Model**: Video-Depth-Anything (Large/Base/Small) for temporal-consistent depth estimation
 - **Video Processing**: FFmpeg for frame extraction, enhancement, and final video assembly
 - **Progress Tracking**: 7-step weighted progress system with WebSocket-based real-time updates
-- **GPU Acceleration**: CUDA support with automatic fallback to CPU
+- **GPU Acceleration**: CUDA (NVIDIA) and MPS (Apple Silicon) support with automatic fallback to CPU
 - **Storage Architecture**: Generation-specific directories eliminating redundant uploads
+- **Cross-Platform**: Linux, macOS (Intel & Apple Silicon), and Windows support
 
 ## Development Commands
 ```bash
@@ -95,7 +96,8 @@ output/
 - **Export Formats**: Additional VR-compatible output formats
 
 ## Dependencies
-- **Core**: Python 3.8+, PyTorch 2.0+, OpenCV 4.8+, CUDA 13.0+ (required for GPU)
+- **Core**: Python 3.9+, PyTorch 2.0+, OpenCV 4.8+
+- **GPU**: CUDA 11.0+ (NVIDIA) or MPS (Apple Silicon) - optional but recommended
 - **Web UI**: Flask 3.0+, SocketIO 5.3+, Bootstrap 5.3
 - **Video**: FFmpeg with full codec support
 - **AI Model**: Depth Anything V2 (pre-downloaded in /models)
@@ -106,9 +108,21 @@ output/
 - **Safari**: Basic support (some WebSocket limitations)
 
 ## System Requirements
+
+### Linux/Windows (NVIDIA GPU)
 - **Minimum**: 8GB RAM, modern CPU, 4GB storage
-- **Recommended**: 16GB RAM, CUDA 13.0+ GPU, 10GB storage
-- **Optimal**: 32GB RAM, CUDA 13.0+ with RTX 4070+ GPU, SSD storage
+- **Recommended**: 16GB RAM, CUDA 11.0+ GPU with 8GB+ VRAM, 10GB storage
+- **Optimal**: 32GB RAM, RTX 4070+ GPU, SSD storage
+
+### macOS (Apple Silicon)
+- **Minimum**: M1 with 8GB unified memory, 4GB storage
+- **Recommended**: M1 Pro/Max or M2 with 16GB+ unified memory, 10GB storage
+- **Optimal**: M2 Pro/Max/Ultra with 32GB+ unified memory, SSD storage
+
+### macOS (Intel)
+- **Note**: Intel Macs run CPU-only (no GPU acceleration)
+- **Minimum**: 16GB RAM, 4GB storage
+- **Recommended**: 32GB RAM, SSD storage
 
 ## Troubleshooting
 - **"uv.lock parse error"**: Script automatically falls back to virtual environment

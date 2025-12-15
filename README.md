@@ -59,8 +59,10 @@ python depth_surge_3d.py input_video.mp4 -s 01:30 -e 03:45 -f over_under --resol
 
 - Python 3.9+
 - FFmpeg
-- CUDA 13.0+ (required for GPU acceleration)
-- CUDA-compatible GPU (optional but strongly recommended)
+- GPU acceleration (optional but strongly recommended):
+  - **NVIDIA GPU**: CUDA 11.0+ with compatible drivers
+  - **Apple Silicon Mac**: MPS (Metal Performance Shaders) - automatically detected
+- CUDA-compatible GPU or Apple Silicon Mac (optional, but strongly recommended)
 
 ## Documentation
 
@@ -93,7 +95,8 @@ Generated videos work with:
 
 ## Performance
 
-- **GPU Processing**: ~2-4 seconds per output frame (RTX 4070+ class)
+- **NVIDIA GPU Processing**: ~2-4 seconds per output frame (RTX 4070+ class)
+- **Apple Silicon (M1/M2/M3)**: ~5-15 seconds per output frame (varies by chip)
 - **CPU Processing**: ~30-60 seconds per output frame
 - **Typical 1-minute clip**: ~2-4 hours on modern GPU at 60fps output
 
